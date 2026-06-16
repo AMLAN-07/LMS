@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { listStudent } from '../services/StudentService'
+import { listStudent } from '../../services/StudentService'
 
 const ListStudent = () => {
 
