@@ -5,6 +5,7 @@ import StudentInfo from './components/StudentInfo'
 import AddStudent from './components/Navigation/AddStudent'
 import Dashboard from './components/Dashboard/Dashboard'
 import Login from './components/LogRegd/Login'
+import Register from './components/LogRegd/Register'
 
 const App = () => {
 
