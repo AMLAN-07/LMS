@@ -11,7 +11,23 @@ const App = () => {
 
   return (
     <>
-  <Login/>
+      <BrowserRouter>
+          <Header />
+        <Routes>
+          {/* Authentication Routes */}
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+          {/* //http://localhost:3000 */}
+          <Route path='/Dashboard' element={<Dashboard />}></Route>
+          {/* //http://localhost:3000/students */}
+          <Route path='/students' element={<StudentInfo />}></Route>
+          {/* //http://localhost:3000/add-student */}
+          <Route path='/add-student' element={<AddStudent />}></Route>
+          {/* //http://localhost:3000/edit-student/#id */}
+          <Route path='/edit-student/:id' element={<AddStudent />}></Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

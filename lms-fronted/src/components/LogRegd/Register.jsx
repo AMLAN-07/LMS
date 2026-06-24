@@ -1,8 +1,73 @@
 import React, { useState } from 'react'
-
+import { createUser } from '../../services/StudentService';
+import {useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const navigator=useNavigate();
+
+
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    password: ''
+  })
+
+  const createAccount = (e) => {
+    e.preventDefault();
+
+    if (validAccount()) {
+
+      const UserData = { name, email, password }
+      console.log(UserData)
+
+      createUser(UserData).then((response) => {
+        console.log(response.data);
+        navigator("/login")
+      }).catch(error => {
+        console.error(error);
+      })
+
+    }
+  }
+
+  const validAccount = () => {
+    let valid = true;
+    const errorsCopy = { ...errors }
+
+    if (name.trim()) {
+      errorsCopy.name = '';
+    } else {
+      errorsCopy.name = 'First name is required';
+      valid = false;
+    }
+    if (email.trim()) {
+      errorsCopy.email = '';
+    } else {
+      errorsCopy.email = 'email is required';
+      valid = false;
+    }
+    if (password.trim()) {
+      errorsCopy.password = '';
+    } else {
+      errorsCopy.password = 'password is required';
+      valid = false;
+    }
+    setErrors(errorsCopy);
+    return valid;
+  }
+
+
+const redirectLogin=()=>{
+  navigator("/login");
+}
+
+
 
   return (
     <div className="min-h-screen bg-[#1f1f1f] flex items-center justify-center px-4">
@@ -45,8 +110,14 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="eg. Amlan Das"
-                  className="w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-4 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]"
+                  name='name'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={`w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-4 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]
+                             ${errors.name ? 'is-invalid' : ''}`}
                 />
+                {errors.name && <div className='invalid-feedback text-red-600' >{errors.name} </div>}
+
               </div>
             </div>
 
@@ -64,8 +135,14 @@ const Register = () => {
                 <input
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-4 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]"
+                  name='email'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-4 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]
+                     ${errors.email ? 'is-invalid' : ''}`}
                 />
+                {errors.email && <div className='invalid-feedback text-red-600' >{errors.email} </div>}
+
               </div>
 
             </div>
@@ -84,8 +161,14 @@ const Register = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
-                  className="w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-16 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]"
+                  name='password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full rounded-xl border border-zinc-700 bg-transparent py-4 pl-12 pr-16 text-white outline-none placeholder:text-zinc-500 focus:border-[#0f8f72]
+                     ${errors.password ? 'is-invalid' : ''}`}
                 />
+                {errors.password && <div className='invalid-feedback text-red-600' >{errors.password} </div>}
+
 
                 <button
                   type="button"
@@ -128,8 +211,11 @@ const Register = () => {
             </div>
 
             {/* Create Account */}
-            <button className="w-full rounded-xl border border-zinc-700 py-4 text-xl font-semibold text-white transition hover:bg-zinc-800 flex items-center justify-center gap-2">
-              <svg className='w-4.5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM18 17V14H20V17H23V19H20V22H18V19H15V17H18Z"></path></svg>
+            <button
+              onClick={createAccount}
+              className="w-full rounded-xl border border-zinc-700 py-4 text-xl font-semibold text-white transition hover:bg-zinc-800 flex items-center justify-center gap-2">
+              <svg
+                className='w-4.5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM18 17V14H20V17H23V19H20V22H18V19H15V17H18Z"></path></svg>
 
               Create account
             </button>
@@ -167,12 +253,15 @@ const Register = () => {
           {/* Login */}
           <p className="mt-8 text-center text-zinc-400">
             Already have an account?{" "}
-            <a
-              href="#"
+<a
+              onClick={redirectLogin}
               className="text-[#0f8f72] font-medium hover:underline"
             >
               Sign in
             </a>
+
+
+
           </p>
         </div>
       </div>

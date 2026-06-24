@@ -1,20 +1,35 @@
 import React, { useState } from 'react'
 import TopBar from './TopBar';
 import { redirect, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/StudentService';
+
 
 const Login = () => {
   const[email,SetEmail]=useState('');
   const [password, SetPassword] = useState('');
-  // const navigator=useNavigate();
+  const data={
+    "email":email,
+    "password":password
+  }
 
+  const navigator=useNavigate();
   const handleLogin =(e)=>{
     e.preventDefault();
-    //api Call
-    console.log("data"+email+" " + password)
+    console.log("data :  "+email+" " + password)
 
-  }
+    loginUser(data).then((response)=>{
+      if(!response.data){
+        alert("invalid psw")
+      }else{
+        alert("login sucessfull")
+        navigator("/students")
+      }
+    })
+
+
+}
   const redirectToRegister =()=>{
-    // navigator('/register')
+     navigator('/register')
 
   }
 

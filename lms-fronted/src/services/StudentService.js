@@ -1,7 +1,13 @@
 import axios from "axios";
+import { data } from "react-router-dom";
 
-const LogRegd_API_BASE_URL="http://localhost:8080/"
+const LogRegd_API_BASE_URL="http://localhost:8080/api"
 
+export const loginUser=(data)=>axios.post(LogRegd_API_BASE_URL+"/loginUser",data)
+export const createUser=(UserData)=>axios.post(LogRegd_API_BASE_URL+"/createUser",UserData)
+
+
+// =================================================
 const REST_API_BASE_URL="http://localhost:8080/api/students";
 
 export const listStudent =()=>axios.get(REST_API_BASE_URL);
