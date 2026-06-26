@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class StudentDto {
+    //student data member 
     private Long id;
     private String firstName;
     private String lastName;
