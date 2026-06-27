@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { createStudent, getStudent, updateStudent } from '../../services/StudentService'
 import { useNavigate, useParams } from 'react-router-dom'
+import AdminControlButton from '../AdminControlButton'
+import DashboardButton from '../DashboardButton'
 
 const AddStudent = () => {
+  const [regdNo, setRegdNo] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -10,6 +13,7 @@ const AddStudent = () => {
   const {id}= useParams();
 
   const [errors,setErrors]= useState({
+    regdNo:'',
     firstName:'',
     lastName:'',
     email:''
@@ -21,6 +25,7 @@ const AddStudent = () => {
 useEffect(()=>{
   if(id){
     getStudent(id).then((response)=>{
+        setRegdNo(response.data.regdNo || '');
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
         setEmail(response.data.email);
@@ -36,7 +41,7 @@ useEffect(()=>{
 
     if(validForm()){
 
-      const student ={firstName,lastName,email}
+      const student ={regdNo,firstName,lastName,email}
       console.log(student)
 
       if(id){
@@ -50,7 +55,7 @@ useEffect(()=>{
 
         createStudent(student).then((response)=>{
           console.log(response.data);
-          navigator('/students')
+          navigator('/students', { state: { popupMessage: 'Student added successfully' } })
         }).catch(error=>{
     console.error(error);})
       }
@@ -63,6 +68,11 @@ useEffect(()=>{
     let valid=true;
     const errorsCopy={...errors}
 
+    if(/^\d{11}$/.test(regdNo.trim())){
+      errorsCopy.regdNo='';
+    }else{errorsCopy.regdNo='Registration number must be 11 digits';
+          valid=false;
+    }
     if(firstName.trim()){
       errorsCopy.firstName='';
     }else{errorsCopy.firstName='First name is required';
@@ -82,8 +92,8 @@ useEffect(()=>{
     return valid;
   }
   const pageTitle=()=>{
-      if(id){return <h2 className='text-center text-white'>Update Studdent</h2>}
-      else{return <h2 className='text-center text-white'>Add Studdent</h2>}
+      if(id){return <h2 className='text-center text-white'>Update Student</h2>}
+      else{return <h2 className='text-center text-white'>Add Student</h2>}
   }
   const buttomName=()=>{
       if(id){return 'Update'}
@@ -92,10 +102,35 @@ useEffect(()=>{
 
   return (
     <>
-      <div className="max-w-md mx-auto mt-10 rounded-2xl bg-zinc-900 p-8 shadow-lg">
+      <div className="mx-auto mt-10 max-w-md">
+        <div className="mb-5 flex flex-wrap gap-3">
+          <DashboardButton />
+          <AdminControlButton />
+        </div>
+      </div>
+      <div className="max-w-md mx-auto rounded-2xl bg-zinc-900 p-8 shadow-lg">
         {pageTitle()}
         <div className='card-body'>
           <form>
+            <div>
+              <label className="mb-2 block text-sm text-zinc-300">
+                Regd. No
+              </label>
+
+              <input
+                type="text"
+                placeholder="Enter registration number"
+                name="regdNo"
+                value={regdNo}
+                required
+                maxLength={11}
+                inputMode="numeric"
+                className={` w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none focus:border-blue-500
+                             ${errors.regdNo?'is-invalid':''}`}
+                onChange={(e) => setRegdNo(e.target.value.replace(/\D/g, '').slice(0, 11))}
+              />
+              { errors.regdNo && <div className='invalid-feedback text-red-600' >{errors.regdNo} </div>}
+            </div>
             <div>
               <label className="mb-2 block text-sm text-zinc-300">
                 First Name
@@ -128,11 +163,11 @@ useEffect(()=>{
                              ${errors.lastName?'is-invalid':''}`}
                 onChange={(e) =>  setLastName(e.target.value)}
               />
-               { errors.firstName && <div className='invalid-feedback text-red-600' >{errors.lastName} </div>}
+               { errors.lastName && <div className='invalid-feedback text-red-600' >{errors.lastName} </div>}
             </div>
             <div>
               <label className="mb-2 block text-sm text-zinc-300">
-                Email Name
+                Email
               </label>
 
               <input
@@ -145,7 +180,7 @@ useEffect(()=>{
                              ${errors.email?'is-invalid':''}`}
                 onChange={(e) =>  setEmail(e.target.value)}
               />
-               { errors.firstName && <div className='invalid-feedback text-red-600' >{errors.email} </div>}
+               { errors.email && <div className='invalid-feedback text-red-600' >{errors.email} </div>}
             </div>
             <button
               type="submit"

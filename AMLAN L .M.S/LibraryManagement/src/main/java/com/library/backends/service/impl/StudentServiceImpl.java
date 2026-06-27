@@ -48,8 +48,9 @@ public class StudentServiceImpl implements StudentService {
 
        Student student= studentRepository.findById(studentid).orElseThrow(
                 ()->new ResourcesNotFoundException("Student is not exists with given id : "+ studentid)
-        );
+       );
 
+       student.setRegdNo(updatedStudent.getRegdNo());
        student.setFirstName(updatedStudent.getFirstName());
        student.setLastName(updatedStudent.getLastName());
        student.setEmail(updatedStudent.getEmail());

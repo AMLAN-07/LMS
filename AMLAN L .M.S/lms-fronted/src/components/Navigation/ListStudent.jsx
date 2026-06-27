@@ -33,14 +33,15 @@ const ListStudent = () => {
 
     return (
 
-        <div className="bg-[#1c1c1c] min-h-screen p-8 text-white">
+        <div id="delete-students" className="bg-[#1c1c1c] min-h-screen p-8 text-white">
             <h2 className='text-center'>List of Student</h2>
             <div className="overflow-hidden rounded-2xl border border-zinc-700">
                 <table className='w-full'>
 
                     <thead className="bg-[#232323] text-zinc-400 uppercase text-sm">
                         <tr>
-                            <th className="px-6 py-5 text-left">ID</th>
+                            <th className="px-6 py-5 text-left">SL.NO</th>
+                            <th className="px-6 py-5 text-left">Regd. No</th>
                             <th className="px-6 py-5 text-left">Name</th>
                             <th className="px-6 py-5 text-left">Email id</th>
                             {/* <th>Status</th> */}
@@ -61,6 +62,7 @@ const ListStudent = () => {
                                                 #{String(student.id).padStart(3, "0")}
                                             </span>
                                         </td>
+                                        <td className='px-6 py-6 text-zinc-300 text-lg'>{student.regdNo || 'Not set'}</td>
                                         <td>
                                             <div className="flex items-center gap-4">
                                                 <div className="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-sky-700">

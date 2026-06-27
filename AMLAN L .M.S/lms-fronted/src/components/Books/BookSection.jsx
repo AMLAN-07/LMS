@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import AdminControlButton from '../AdminControlButton'
+import DashboardButton from '../DashboardButton'
 
 const starterBooks = [
   { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Fiction' },
@@ -57,6 +59,11 @@ const BookSection = () => {
       )}
 
       <div className="mx-auto max-w-6xl space-y-6">
+        <div className="flex flex-wrap gap-3">
+          <DashboardButton />
+          <AdminControlButton />
+        </div>
+
         <div className="rounded-3xl border border-zinc-700 bg-[#252525] p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>

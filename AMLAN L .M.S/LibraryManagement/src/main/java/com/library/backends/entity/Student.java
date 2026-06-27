@@ -19,6 +19,9 @@ public class Student {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="regd_no")
+    private String regdNo;
+
     @Column(name="first_name")
     private String firstName;
 

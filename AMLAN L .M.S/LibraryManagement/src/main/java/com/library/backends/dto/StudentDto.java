@@ -12,6 +12,7 @@ import lombok.Setter;
 
 public class StudentDto {
     private Long id;
+    private String regdNo;
     private String firstName;
     private String lastName;
     private String email;
