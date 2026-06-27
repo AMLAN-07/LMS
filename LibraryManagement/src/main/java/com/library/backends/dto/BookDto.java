@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BookDto {
 
-    //data member 
     private Long bookId;
     private String title;
     private String author;

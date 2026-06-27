@@ -1,7 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "start": "npm --prefix lms-fronted run dev --",
-    "build": "npm --prefix lms-fronted run build"
-  }
-}

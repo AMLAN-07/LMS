@@ -1,12 +1,82 @@
 import React, { useEffect, useState } from 'react'
-import { deleteStudent, listStudent } from '../../services/StudentService'
+import { deleteStudent, listStudent, listStudentBooks } from '../../services/StudentService'
 import { useNavigate } from 'react-router-dom'
 
 const ListStudent = () => {
 
     const [student, setStudent] = useState([])
 
+    const [activeLoans, setActiveLoans] = useState([])
+
     const navigator = useNavigate();
+
+    const [loading, setLoading] = useState(true)
+
+    function loadStatus() {
+        setLoading(true)
+        Promise.all([listStudent(), listStudentBooks()])
+            .then(([studentRes, loanRes]) => {
+                setStudent(studentRes.data)
+                setActiveLoans(loanRes.data)
+            })
+            .catch(error => {
+                console.error(error)
+            })
+            .finally(() => setLoading(false))
+    }
+
+    useEffect(() => {
+        loadStatus()
+    }, [])
+
+
+    function daysOverdue(dueDate) {
+        const due = new Date(dueDate)
+        const today = new Date()
+        due.setHours(0, 0, 0, 0)
+        today.setHours(0, 0, 0, 0)
+        return Math.round((today - due) / (1000 * 60 * 60 * 24))
+    }
+
+    function getLoanForStudent(studentId) {
+        return activeLoans.find(loan => loan.studentId === studentId)
+    }
+
+    function renderStatusBadge(loan) {
+        if (!loan) {
+            return (
+                <span className="rounded-lg border border-zinc-700 bg-zinc-800/40 text-zinc-400 px-3 py-1 text-xs font-medium">
+                    No active loan
+                </span>
+            )
+        }
+        const overdueBy = daysOverdue(loan.dueDate)
+        if (overdueBy > 0) {
+            return (
+                <span className="rounded-lg border border-red-500/40 bg-red-500/10 text-red-400 px-3 py-1 text-xs font-medium">
+                    {overdueBy} day{overdueBy === 1 ? '' : 's'} overdue
+                </span>
+            )
+        }
+        if (overdueBy >= -2) {
+            return (
+                <span className="rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-400 px-3 py-1 text-xs font-medium">
+                    Due soon
+                </span>
+            )
+        }
+        return (
+            <span className="rounded-lg border border-green-500/40 bg-green-500/10 text-green-400 px-3 py-1 text-xs font-medium">
+                Holding book
+            </span>
+        )
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '—'
+        return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+    }
+
 
     function getAllStudent(){
         listStudent().then((response) => {
@@ -43,7 +113,7 @@ const ListStudent = () => {
                             <th className="px-6 py-5 text-left">ID</th>
                             <th className="px-6 py-5 text-left">Name</th>
                             <th className="px-6 py-5 text-left">Email id</th>
-                            {/* <th>Status</th> */}
+                            <th className="px-6 py-5 text-left">Status</th>
                             <th className="px-6 py-5 text-left">Action</th>
                         </tr>
                     </thead>
@@ -51,8 +121,8 @@ const ListStudent = () => {
                     <tbody>
                         {
                             student.map((student) => {
-                                const initials =
-                                    student.firstName[0] + student.lastName[0];
+                                const initials = student.firstName[0] + student.lastName[0]
+                                    const loan = getLoanForStudent(student.id)
                                 return (
                                     <tr key={student.id}
                                         className='border-t border-zinc-700 hover:bg-zinc-800/40 transition'>
@@ -73,6 +143,9 @@ const ListStudent = () => {
                                             </div>
                                         </td>
                                         <td className='px-6 py-6 text-zinc-300 text-lg'>{student.email}</td>
+                                        <td className='px-6 py-6'>
+                                            {renderStatusBadge(loan)}
+                                        </td>
                                         <td className="px-6 py-6">
                                             <div className="flex justify-center gap-3">
 

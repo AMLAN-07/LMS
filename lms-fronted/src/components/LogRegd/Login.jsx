@@ -22,7 +22,7 @@ const Login = () => {
         alert("invalid psw")
       }else{
         alert("login sucessfull")
-        navigator("/students")
+        navigator("/Dashboard")
       }
     })
 
