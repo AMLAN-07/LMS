@@ -64,6 +64,6 @@ public class StudentServiceImpl implements StudentService {
                 ()->new ResourcesNotFoundException("Student is not exists with given id : "+ studentid)
         );
 
-        studentRepository.deleteById(studentid);
+        studentRepository.delete(student);
     }
 }

@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix \"AMLAN L .M.S\" start",
+    "build": "npm --prefix \"AMLAN L .M.S\" run build"
+  }
+}
