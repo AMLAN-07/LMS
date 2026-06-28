@@ -117,6 +117,8 @@ function App() {
     return students.filter((student) => sameOrganization(student.organizationName, currentUser.organizationName))
   }, [currentUser, students])
 
+  const activeVisibleStudents = useMemo(() => visibleStudents.filter((student) => student.active), [visibleStudents])
+
   const visibleStudentIds = useMemo(() => new Set(visibleStudents.map((student) => student.id)), [visibleStudents])
   const visibleIssues = useMemo(() => issues.filter((issue) => visibleStudentIds.has(issue.studentId)), [issues, visibleStudentIds])
   const visibleIssueIds = useMemo(() => new Set(visibleIssues.map((issue) => issue.issueId)), [visibleIssues])
@@ -286,7 +288,7 @@ function App() {
           form={studentForm}
           setForm={setStudentForm}
           onSubmit={saveStudent}
-          students={visibleStudents}
+          students={activeVisibleStudents}
           editingId={editingStudentId}
           onEdit={(student) => {
             setEditingStudentId(student.id)
