@@ -77,12 +77,36 @@ textarea {
   overflow-x: hidden;
 }
 
+.auth-shell {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.auth-card {
+  max-width: 960px;
+  width: 100%;
+}
+
+.auth-card h1 {
+  color: #17324d;
+  font-size: 34px;
+  margin: 0 0 18px;
+}
+
 .topbar {
   align-items: center;
   display: flex;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 18px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .alert {
@@ -275,6 +299,30 @@ th {
   margin: 0;
 }
 
+.profile-panel {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.profile-line {
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+}
+
+.profile-line span {
+  color: #667085;
+}
+
+.profile-line strong {
+  color: #17324d;
+  text-align: right;
+}
+
 @media (max-width: 980px) {
   .app-shell,
   .two-column,
@@ -300,6 +348,14 @@ th {
   .topbar {
     align-items: start;
     flex-direction: column;
+  }
+
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-actions button {
+    flex: 1;
   }
 
   .stats-grid,

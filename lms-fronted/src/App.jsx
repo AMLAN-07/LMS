@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-import Header from './components/Header'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
-import StudentInfo from './components/StudentInfo'
-import AddStudent from './components/Navigation/AddStudent'
-import Dashboard from './components/Dashboard/Dashboard'
-import Login from './components/LogRegd/Login'
-import Register from './components/LogRegd/Register'
-import ListBook from './components/Navigation/ListBook'
-import BookInfo from './components/BookInfo'
-import ListBookBar from './components/Navigation/ListBookBar'
-import AddBook from './components/Navigation/AddBook'
-import BorrowBook from './components/Navigation/BorrowBook'
-import StudentBookReport from './components/Navigation/StudentBookReport'
-import ReturnBook from './components/Navigation/ReturnBook'
-
-// Routes where the Header should be hidden (auth pages)
-const HIDE_HEADER_ROUTES = ['/', '/login', '/register']
-
-const AppLayout = () => {
-  const location = useLocation()
-  const hideHeader = HIDE_HEADER_ROUTES.includes(location.pathname)
-=======
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import {
@@ -52,8 +28,17 @@ const emptyStudent = { firstName: '', lastName: '', email: '', course: 'BCA', ro
 const emptyBook = { title: '', author: '', isbn: '', publisher: '', bookcopy: 1, categoryId: '' }
 const emptyCategory = { name: '', description: '' }
 
+const adminPages = ['Dashboard', 'Students', 'Books', 'Categories', 'Issue Book', 'Return Book', 'Fines', 'Reports', 'Profile']
+const studentPages = ['My Dashboard', 'Books', 'My Books', 'Fines', 'Profile']
+
 function App() {
-  const [page, setPage] = useState('Dashboard')
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('lmsUser')
+    return savedUser ? JSON.parse(savedUser) : null
+  })
+  const isAdmin = currentUser?.role === 'ADMIN'
+  const pages = isAdmin ? adminPages : studentPages
+  const [page, setPage] = useState(isAdmin ? 'Dashboard' : 'My Dashboard')
   const [message, setMessage] = useState('')
   const [dashboard, setDashboard] = useState(null)
   const [students, setStudents] = useState([])
@@ -66,13 +51,11 @@ function App() {
   const [bookForm, setBookForm] = useState(emptyBook)
   const [categoryForm, setCategoryForm] = useState(emptyCategory)
   const [issueForm, setIssueForm] = useState({ studentId: '', bookId: '', dueDate: '' })
-  const [loginForm, setLoginForm] = useState({ email: 'student@test.com', password: '123456' })
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '', role: 'STUDENT' })
   const [editingStudentId, setEditingStudentId] = useState(null)
   const [editingBookId, setEditingBookId] = useState(null)
   const [editingCategoryId, setEditingCategoryId] = useState(null)
-
-  const pages = ['Dashboard', 'Students', 'Books', 'Categories', 'Issue Book', 'Return Book', 'Fines', 'Reports', 'Profile']
 
   const loadData = async () => {
     try {
@@ -98,14 +81,72 @@ function App() {
   }
 
   useEffect(() => {
-    loadData()
-  }, [])
+    if (currentUser) {
+      loadData()
+      setPage(currentUser.role === 'ADMIN' ? 'Dashboard' : 'My Dashboard')
+    }
+  }, [currentUser])
 
+  const studentRecord = useMemo(() => {
+    if (!currentUser) return null
+    return students.find((student) => student.email?.toLowerCase() === currentUser.email?.toLowerCase()) || null
+  }, [currentUser, students])
+
+  const studentIssueIds = useMemo(() => {
+    if (!studentRecord) return new Set()
+    return new Set(issues.filter((issue) => issue.studentId === studentRecord.id).map((issue) => issue.issueId))
+  }, [issues, studentRecord])
+
+  const studentIssues = useMemo(() => {
+    if (!studentRecord) return []
+    return issues.filter((issue) => issue.studentId === studentRecord.id)
+  }, [issues, studentRecord])
+
+  const studentReturns = useMemo(() => returns.filter((item) => studentIssueIds.has(item.issueId)), [returns, studentIssueIds])
+  const studentFines = useMemo(() => {
+    if (!studentRecord) return []
+    return fines.filter((fine) => fine.studentId === studentRecord.id)
+  }, [fines, studentRecord])
   const activeIssues = useMemo(() => issues.filter((issue) => issue.status === 'ISSUED'), [issues])
 
   const showMessage = (text) => {
     setMessage(text)
     setTimeout(() => setMessage(''), 3000)
+  }
+
+  const handleLogin = async (event) => {
+    event.preventDefault()
+    try {
+      const response = await loginUser(loginForm)
+      if (!response.data.success) {
+        showMessage(response.data.message || 'Invalid email or password')
+        return
+      }
+      const user = {
+        email: response.data.email || loginForm.email,
+        name: response.data.name || loginForm.email,
+        role: (response.data.role || 'STUDENT').toUpperCase(),
+        token: response.data.token,
+      }
+      localStorage.setItem('lmsUser', JSON.stringify(user))
+      setCurrentUser(user)
+      showMessage(`${user.role === 'ADMIN' ? 'Admin' : 'Student'} login successful`)
+    } catch {
+      showMessage('Login failed. Please check backend connection.')
+    }
+  }
+
+  const handleRegister = async (event) => {
+    event.preventDefault()
+    await registerUser(registerForm)
+    setRegisterForm({ name: '', email: '', password: '', role: 'STUDENT' })
+    showMessage('User registered successfully. Please login now.')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('lmsUser')
+    setCurrentUser(null)
+    setLoginForm({ email: '', password: '' })
   }
 
   const saveStudent = async (event) => {
@@ -169,23 +210,24 @@ function App() {
     loadData()
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    const response = await loginUser(loginForm)
-    showMessage(response.data.message)
-  }
-
-  const handleRegister = async (event) => {
-    event.preventDefault()
-    await registerUser(registerForm)
-    setRegisterForm({ name: '', email: '', password: '', role: 'STUDENT' })
-    showMessage('User registered successfully')
-  }
-
   const renderPage = () => {
-    if (page === 'Dashboard') {
-      return <Dashboard dashboard={dashboard} issues={issues} returns={returns} fines={fines} />
+    if (!isAdmin) {
+      if (page === 'My Dashboard') {
+        return <StudentDashboard user={currentUser} student={studentRecord} issues={studentIssues} returns={studentReturns} fines={studentFines} />
+      }
+      if (page === 'Books') {
+        return <BookCatalog books={books} categories={categories} />
+      }
+      if (page === 'My Books') {
+        return <StudentBooks issues={studentIssues} returns={studentReturns} />
+      }
+      if (page === 'Fines') {
+        return <StudentFines fines={studentFines} />
+      }
+      return <StudentProfile user={currentUser} student={studentRecord} onLogout={handleLogout} />
     }
+
+    if (page === 'Dashboard') return <Dashboard dashboard={dashboard} issues={issues} returns={returns} fines={fines} />
     if (page === 'Students') {
       return (
         <Students
@@ -259,15 +301,28 @@ function App() {
     if (page === 'Reports') {
       return <Reports students={students} books={books} issues={issues} returns={returns} fines={fines} />
     }
-    return <Profile loginForm={loginForm} setLoginForm={setLoginForm} onLogin={handleLogin} registerForm={registerForm} setRegisterForm={setRegisterForm} onRegister={handleRegister} />
+    return <AdminProfile user={currentUser} onLogout={handleLogout} />
   }
->>>>>>> a5db1ff (update both frontned and backend)
+
+  if (!currentUser) {
+    return (
+      <AuthScreen
+        loginForm={loginForm}
+        setLoginForm={setLoginForm}
+        onLogin={handleLogin}
+        registerForm={registerForm}
+        setRegisterForm={setRegisterForm}
+        onRegister={handleRegister}
+        message={message}
+      />
+    )
+  }
 
   return (
     <main className="app-shell">
       <aside className="sidebar">
         <div>
-          {/* <p className="eyebrow">BCA Project</p> */}
+          <p className="eyebrow">{currentUser.role}</p>
           <h1>Online Library</h1>
         </div>
         <nav>
@@ -281,13 +336,49 @@ function App() {
       <section className="workspace">
         <header className="topbar">
           <div>
-            <p className="eyebrow">Library Management System</p>
+            <p className="eyebrow">Welcome, {currentUser.name}</p>
             <h2>{page}</h2>
           </div>
-          <button className="secondary-btn" onClick={loadData}>Refresh</button>
+          <div className="topbar-actions">
+            <button className="secondary-btn" onClick={loadData}>Refresh</button>
+            <button className="danger-btn" onClick={handleLogout}>Logout</button>
+          </div>
         </header>
         {message && <div className="alert">{message}</div>}
         {renderPage()}
+      </section>
+    </main>
+  )
+}
+
+function AuthScreen({ loginForm, setLoginForm, onLogin, registerForm, setRegisterForm, onRegister, message }) {
+  return (
+    <main className="auth-shell">
+      <section className="auth-card">
+        <div>
+          <p className="eyebrow">Library Management System</p>
+          <h1>Login</h1>
+        </div>
+        {message && <div className="alert">{message}</div>}
+        <div className="two-column">
+          <form className="panel form-grid" onSubmit={onLogin}>
+            <h3>Sign in</h3>
+            <input required type="email" placeholder="Email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
+            <input required type="password" placeholder="Password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
+            <button className="primary-btn">Login</button>
+          </form>
+          <form className="panel form-grid" onSubmit={onRegister}>
+            <h3>Register User</h3>
+            <input required placeholder="Name" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} />
+            <input required type="email" placeholder="Email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} />
+            <input required type="password" placeholder="Password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
+            <select value={registerForm.role} onChange={(e) => setRegisterForm({ ...registerForm, role: e.target.value })}>
+              <option value="STUDENT">Student</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+            <button className="primary-btn">Create Account</button>
+          </form>
+        </div>
       </section>
     </main>
   )
@@ -306,29 +397,6 @@ function Dashboard({ dashboard, issues, returns, fines }) {
   ]
   return (
     <>
-<<<<<<< HEAD
-      {!hideHeader && <Header />}
-      <Routes>
-        {/* Authentication Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        {/* //http://localhost:3000 */}
-        <Route path='/Dashboard' element={<Dashboard />}></Route>
-        <Route path='/Book' element={<BookInfo/>}></Route>
-        {/* //http://localhost:3000/students */}
-        <Route path='/students' element={<StudentInfo />}></Route>
-        <Route path='/borrow' element={<BorrowBook />}></Route>
-        <Route path='/report' element={<StudentBookReport/>}></Route>
-        <Route path='/return' element={<ReturnBook/>}></Route>
-        {/* //http://localhost:3000/add-student */}
-        <Route path='/add-student' element={<AddStudent />}></Route>
-        <Route path='/add-book' element={<AddBook />}></Route>
-        <Route path='/edit-book/:bookId' element={<AddBook />}></Route>
-        {/* //http://localhost:3000/edit-student/#id */}
-        <Route path='/edit-student/:id' element={<AddStudent />}></Route>
-      </Routes>
-=======
       <div className="stats-grid">
         {cards.map(([label, value]) => <StatCard key={label} label={label} value={value} />)}
       </div>
@@ -349,22 +417,30 @@ function Dashboard({ dashboard, issues, returns, fines }) {
           </ul>
         </div>
       </div>
->>>>>>> a5db1ff (update both frontned and backend)
     </>
   )
 }
 
-<<<<<<< HEAD
-const App = () => {
+function StudentDashboard({ user, student, issues, returns, fines }) {
+  const pendingBooks = issues.filter((issue) => issue.status === 'ISSUED')
+  const unpaidFines = fines.filter((fine) => fine.status !== 'PAID')
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <>
+      {!student && <div className="alert">No student profile is linked with {user.email}. Ask admin to add a student with the same email.</div>}
+      <div className="stats-grid">
+        <StatCard label="Issued Books" value={issues.length} />
+        <StatCard label="Pending Returns" value={pendingBooks.length} />
+        <StatCard label="Returned Books" value={returns.length} />
+        <StatCard label="Unpaid Fines" value={`Rs. ${unpaidFines.reduce((total, fine) => total + Number(fine.amount || 0), 0)}`} />
+      </div>
+      <div className="two-column">
+        <StudentProfile user={user} student={student} />
+        <IssueTable issues={pendingBooks} title="Currently Issued Books" />
+      </div>
+    </>
   )
 }
 
-export default App
-=======
 function StatCard({ label, value }) {
   return <div className="stat-card"><span>{label}</span><strong>{value}</strong></div>
 }
@@ -412,18 +488,21 @@ function Books({ form, setForm, onSubmit, books, categories, editingId, onEdit, 
         </select>
         <button className="primary-btn">{editingId ? 'Update' : 'Save'}</button>
       </form>
-      <DataTable
-        title="Book Inventory"
-        headers={['Title', 'Author', 'Category', 'Copies', 'Actions']}
-        rows={books.map((book) => [
-          book.title,
-          book.author,
-          book.categoryName || 'General',
-          book.bookcopy,
-          <ActionButtons key={book.bookId} onEdit={() => onEdit(book)} onDelete={() => onDelete(book.bookId)} />,
-        ])}
-      />
+      <BookCatalog books={books} categories={categories} onEdit={onEdit} onDelete={onDelete} />
     </div>
+  )
+}
+
+function BookCatalog({ books, onEdit, onDelete }) {
+  return (
+    <DataTable
+      title="Book Inventory"
+      headers={onEdit ? ['Title', 'Author', 'Category', 'Copies', 'Actions'] : ['Title', 'Author', 'Category', 'Copies']}
+      rows={books.map((book) => {
+        const cells = [book.title, book.author, book.categoryName || 'General', book.bookcopy]
+        return onEdit ? [...cells, <ActionButtons key={book.bookId} onEdit={() => onEdit(book)} onDelete={() => onDelete(book.bookId)} />] : cells
+      })}
+    />
   )
 }
 
@@ -508,6 +587,16 @@ function Fines({ fines, onPaid }) {
   )
 }
 
+function StudentFines({ fines }) {
+  return (
+    <DataTable
+      title="My Fine Details"
+      headers={['Issue Id', 'Amount', 'Status']}
+      rows={fines.map((fine) => [fine.issueId, `Rs. ${fine.amount}`, fine.status])}
+    />
+  )
+}
+
 function Reports({ students, books, issues, returns, fines }) {
   const cards = [
     ['Student Report', students.length, 'Active and inactive student records'],
@@ -529,34 +618,53 @@ function Reports({ students, books, issues, returns, fines }) {
   )
 }
 
-function Profile({ loginForm, setLoginForm, onLogin, registerForm, setRegisterForm, onRegister }) {
+function AdminProfile({ user, onLogout }) {
   return (
-    <div className="two-column">
-      <form className="panel form-grid" onSubmit={onLogin}>
-        <h3>Login</h3>
-        <input type="email" placeholder="Email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
-        <input type="password" placeholder="Password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
-        <button className="primary-btn">Login</button>
-      </form>
-      <form className="panel form-grid" onSubmit={onRegister}>
-        <h3>Register User</h3>
-        <input required placeholder="Name" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} />
-        <input required type="email" placeholder="Email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} />
-        <input required type="password" placeholder="Password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
-        <select value={registerForm.role} onChange={(e) => setRegisterForm({ ...registerForm, role: e.target.value })}>
-          <option value="STUDENT">Student</option>
-          <option value="ADMIN">Admin</option>
-        </select>
-        <button className="primary-btn">Register</button>
-      </form>
+    <div className="panel profile-panel">
+      <h3>Admin Profile</h3>
+      <ProfileLine label="Name" value={user.name} />
+      <ProfileLine label="Email" value={user.email} />
+      <ProfileLine label="Role" value={user.role} />
+      <button className="danger-btn" onClick={onLogout}>Logout</button>
     </div>
   )
 }
 
-function IssueTable({ issues }) {
+function StudentProfile({ user, student, onLogout }) {
+  return (
+    <div className="panel profile-panel">
+      <h3>Student Profile</h3>
+      <ProfileLine label="Name" value={student ? `${student.firstName} ${student.lastName}` : user.name} />
+      <ProfileLine label="Email" value={student?.email || user.email} />
+      <ProfileLine label="Course" value={student?.course || 'Not linked'} />
+      <ProfileLine label="Roll Number" value={student?.rollNumber || 'Not linked'} />
+      <ProfileLine label="Status" value={student ? (student.active ? 'Active' : 'Inactive') : 'No student record'} />
+      {onLogout && <button className="danger-btn" onClick={onLogout}>Logout</button>}
+    </div>
+  )
+}
+
+function ProfileLine({ label, value }) {
+  return <p className="profile-line"><span>{label}</span><strong>{value}</strong></p>
+}
+
+function StudentBooks({ issues, returns }) {
+  return (
+    <div className="two-column">
+      <IssueTable issues={issues} title="My Issue History" />
+      <DataTable
+        title="My Returned Books"
+        headers={['Issue Id', 'Return Date', 'Late Days', 'Fine']}
+        rows={returns.map((item) => [item.issueId, item.returnDate, item.lateDays, `Rs. ${item.fineAmount}`])}
+      />
+    </div>
+  )
+}
+
+function IssueTable({ issues, title = 'Issue History' }) {
   return (
     <DataTable
-      title="Issue History"
+      title={title}
       headers={['Book', 'Student', 'Issue Date', 'Due Date', 'Status']}
       rows={issues.map((issue) => [issue.bookTitle, issue.studentName, issue.issueDate, issue.dueDate, issue.status])}
     />
@@ -594,4 +702,3 @@ function ActionButtons({ onEdit, onDelete }) {
 }
 
 export default App
->>>>>>> a5db1ff (update both frontned and backend)

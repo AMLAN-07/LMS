@@ -29,12 +29,13 @@ public class UserController {
 
     @PostMapping("/login")
     public AuthResponse loginUser(@RequestBody LoginRequest loginRequest) {
-        boolean success = userService.LoginUser(loginRequest);
-        if (!success) {
-            return new AuthResponse(false, null, null, "Invalid email or password");
+        User user = userService.authenticateUser(loginRequest);
+        if (user == null) {
+            return new AuthResponse(false, null, null, null, null, "Invalid email or password");
         }
         String tokenText = loginRequest.getEmail() + ":library-token";
         String token = Base64.getEncoder().encodeToString(tokenText.getBytes(StandardCharsets.UTF_8));
-        return new AuthResponse(true, token, "STUDENT", "Login successful");
+        String role = user.getRole() == null || user.getRole().isBlank() ? "STUDENT" : user.getRole().toUpperCase();
+        return new AuthResponse(true, token, role, user.getEmail(), user.getName(), "Login successful");
     }
 }

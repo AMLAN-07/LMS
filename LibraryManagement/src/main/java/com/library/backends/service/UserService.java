@@ -14,4 +14,6 @@ public User createUser(User user);
 
 public  Boolean LoginUser( LoginRequest loginRequest);
 
+public User authenticateUser(LoginRequest loginRequest);
+
 }

@@ -25,18 +25,23 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public  Boolean LoginUser( LoginRequest loginRequest){
+        return authenticateUser(loginRequest) != null;
+    }
+
+    @Override
+    public User authenticateUser(LoginRequest loginRequest) {
         Optional<User> user=userRepository.findById(loginRequest.getEmail());
 
         if(!user.isPresent()){
-            return false;
+            return null;
         }
         User user1=user.get();
         if(!user1.getPassword().equals(loginRequest.getPassword())){
-            return false;
+            return null;
         }
-        return user1.isActive() && user1.getEmail().equals(loginRequest.getEmail());
-
-
-
+        if (!user1.isActive() || !user1.getEmail().equals(loginRequest.getEmail())) {
+            return null;
+        }
+        return user1;
     }
 }
