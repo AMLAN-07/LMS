@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentBookDto {
+public class ReturnedBookDto {
     private Long issueId;
-    private Long studentId;
     private String studentName;
     private String bookTitle;
-    private String author;
     private LocalDate issueDate;
     private LocalDate dueDate;
-    private String status;
+    private LocalDate returnDate;
+    private long daysLate; // 0 if returned on time
+    private double fineAmount;
 }

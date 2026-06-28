@@ -18,6 +18,9 @@ public interface BookIssueRepository extends JpaRepository<BookIssue, Long> {
     @Query("SELECT bi FROM BookIssue bi WHERE bi.returnDate IS NULL ORDER BY bi.student.id")
     List<BookIssue> findAllActiveIssues();
 
+    @Query("SELECT bi FROM BookIssue bi WHERE bi.returnDate IS NOT NULL ORDER BY bi.returnDate DESC")
+    List<BookIssue> findAllReturnedIssues();
+
     List<BookIssue> findByStudent_Id(Long studentId);
     List<BookIssue> findByBook_BookId(Long bookId);
 }

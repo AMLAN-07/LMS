@@ -1,9 +1,0 @@
-com\library\backends\repository\StudentRepository.class
-com\library\backends\entity\Student.class
-com\library\backends\exception\ResourcesNotFoundException.class
-com\library\backends\mapper\StudentMapper.class
-com\library\backends\controller\StudentController.class
-com\library\backends\BackendsApplication.class
-com\library\backends\service\StudentService.class
-com\library\backends\dto\StudentDto.class
-com\library\backends\service\impl\StudentServiceImpl.class

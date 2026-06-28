@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { listStudentBooks } from "../../services/StudentService";
 
-const StudentBookReport = () => {
+const RecentReport = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,20 +80,12 @@ const StudentBookReport = () => {
   }
 
   return (
-    <div className="bg-[#232323] border border-green-100 rounded-xl p-5 shadow-md">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-white">
-          Student Loan Report
-        </h2>
-        <span className="text-sm text-green-600">
-          {rows.length} active loan{rows.length === 1 ? "" : "s"}
-        </span>
-      </div>
+    <div className="bg-white border border-green-100 rounded-xl p-5 shadow-md">
+
 
       {/* Loading */}
       {loading && (
-        <p className="py-6 text-center text-sm text-green-600">
+        <p className="py-6 text-center text-sm text-gray-500">
           Loading report...
         </p>
       )}
@@ -107,30 +99,30 @@ const StudentBookReport = () => {
 
       {/* Empty */}
       {!loading && !error && rows.length === 0 && (
-        <p className="py-6 text-center text-sm text-green-600">
+        <p className="py-6 text-center text-sm text-gray-500">
           No books are currently issued.
         </p>
       )}
 
       {/* Table */}
       {!loading && !error && rows.length > 0 && (
-        <div className="overflow-x-auto bg-[#232323]">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-b border-green-600">
-                <th className="text-left py-2 px-2 font-semibold text-green-600">
+              <tr className="border-b border-green-200">
+                <th className="text-left py-2 px-2 font-semibold text-gray-500">
                   Student
                 </th>
-                <th className="text-left py-2 px-2 font-semibold text-green-600">
+                <th className="text-left py-2 px-2 font-semibold text-gray-500">
                   Book
                 </th>
-                <th className="text-left py-2 px-2 font-semibold text-green-600">
+                <th className="text-left py-2 px-2 font-semibold text-gray-500">
                   Issued
                 </th>
-                <th className="text-left py-2 px-2 font-semibold text-green-600">
+                <th className="text-left py-2 px-2 font-semibold text-gray-500">
                   Due
                 </th>
-                <th className="text-left py-2 px-2 font-semibold text-green-600">
+                <th className="text-left py-2 px-2 font-semibold text-gray-500">
                   Status
                 </th>
               </tr>
@@ -146,19 +138,19 @@ const StudentBookReport = () => {
                   <tr
                     key={idx}
                     className={`border-b border-gray-100 ${
-                      isOverdue ? "bg-[#232323]" : ""
+                      isOverdue ? "bg-red-100" : ""
                     }`}
                   >
-                    <td className="py-3 px-2 text-white">
+                    <td className="py-3 px-2 text-green-900">
                       {row.studentName}
                     </td>
-                    <td className="py-3 px-2 text-white">
+                    <td className="py-3 px-2 text-green-900">
                       {row.bookTitle}
                     </td>
-                    <td className="py-3 px-2 text-white">
+                    <td className="py-3 px-2 text-gray-500">
                       {formatDate(row.issueDate)}
                     </td>
-                    <td className="py-3 px-2 text-white">
+                    <td className="py-3 px-2 text-gray-500">
                       {formatDate(row.dueDate)}
                     </td>
                     <td className="py-3 px-2">{renderStatus(row)}</td>
@@ -173,4 +165,4 @@ const StudentBookReport = () => {
   );
 };
 
-export default StudentBookReport;
+export default RecentReport;

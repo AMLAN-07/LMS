@@ -60,3 +60,8 @@ export const listOverdueBooks = () =>
 
 export const listStudentBooks = () =>
   axios.get(REPORTS_API_BASE_URL + "/student-books");
+
+export const listReturnedBooks = () =>
+  axios.get(REPORTS_API_BASE_URL + "/returned-books");
+
+// =====================================================

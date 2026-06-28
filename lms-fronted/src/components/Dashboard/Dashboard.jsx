@@ -45,6 +45,9 @@ const [rows, setRows] = useState([]);
   function Borrow() {
     navigator('/borrow')
   }
+  function Report() {
+    navigator('/report')
+  }
   return (
 
     <div className="h-[calc(100vh-136px)] overflow-y-auto bg-[#1a1a1a] p-6">
@@ -108,7 +111,9 @@ const [rows, setRows] = useState([]);
               </h3>
             </div>
 
-            <div className="rounded-3xl border border-zinc-700 bg-[#252525] p-6">
+            <div
+            onClick={Report}
+            className="rounded-3xl border border-zinc-700 bg-[#252525] p-6">
               <svg className='mb-4 size-70 text-purple-400' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 13H8V21H2V13ZM16 8H22V21H16V8ZM9 3H15V21H9V3ZM4 15V19H6V15H4ZM11 5V19H13V5H11ZM18 10V19H20V10H18Z"></path></svg>
 
               <p className="text-zinc-400">Reports</p>

@@ -32,32 +32,18 @@ const ListBook = () => {
 
     return (
 
-<<<<<<< HEAD:AMLAN L .M.S/lms-fronted/src/components/Navigation/ListStudent.jsx
-        <div id="delete-students" className="bg-[#1c1c1c] min-h-screen p-8 text-white">
-            <h2 className='text-center'>List of Student</h2>
-=======
         <div className="bg-[#1c1c1c] min-h-screen p-8 text-white">
             <h2 className='text-center'>List of Book</h2>
->>>>>>> 2ecaad98e02a7b825454daff381350aa14c035b1:lms-fronted/src/components/Navigation/ListBook.jsx
             <div className="overflow-hidden rounded-2xl border border-zinc-700">
                 <table className='w-full'>
 
                     <thead className="bg-[#232323] text-zinc-400 uppercase text-sm">
                         <tr>
-<<<<<<< HEAD:AMLAN L .M.S/lms-fronted/src/components/Navigation/ListStudent.jsx
-                            <th className="px-6 py-5 text-left">SL.NO</th>
-                            <th className="px-6 py-5 text-left">Regd. No</th>
-                            <th className="px-6 py-5 text-left">Name</th>
-                            <th className="px-6 py-5 text-left">Email id</th>
-                            {/* <th>Status</th> */}
-                            <th className="px-6 py-5 text-left">Action</th>
-=======
                             <th className="px-6 py-5 text-left">ID</th>
                             <th className="px-6 py-5 text-left">Title</th>
                             <th className="px-6 py-5 text-left">Auther</th>
                             <th className="px-6 py-5 text-left">Copy</th>
                             <th className="px-6 py-5 text-middle">Action</th>
->>>>>>> 2ecaad98e02a7b825454daff381350aa14c035b1:lms-fronted/src/components/Navigation/ListBook.jsx
                         </tr>
                     </thead>
 
@@ -74,10 +60,9 @@ const ListBook = () => {
                                                 #{String(book.bookId).padStart(3, "0")}
                                             </span>
                                         </td>
-                                        <td className='px-6 py-6 text-zinc-300 text-lg'>{student.regdNo || 'Not set'}</td>
                                         <td>
                                             <div className="flex items-center gap-4">
-                                                <div className="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-sky-700">
+                                                <div className="h-12 w-12 rounded-2xl bg-slate-200 flex items-center justify-center font-semibold text-sky-700">
                                                     {initials}
                                                 </div>
 
@@ -120,8 +105,4 @@ const ListBook = () => {
     )
 }
 
-<<<<<<< HEAD:AMLAN L .M.S/lms-fronted/src/components/Navigation/ListStudent.jsx
-export default ListStudent
-=======
 export default ListBook
->>>>>>> 2ecaad98e02a7b825454daff381350aa14c035b1:lms-fronted/src/components/Navigation/ListBook.jsx

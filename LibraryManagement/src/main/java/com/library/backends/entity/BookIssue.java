@@ -40,4 +40,7 @@ public class BookIssue {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private IssueStatus status;
+
+    @Column(name = "fine_amount")
+    private Double fineAmount = 0.0;
 }

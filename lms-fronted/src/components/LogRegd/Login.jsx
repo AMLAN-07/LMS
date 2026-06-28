@@ -14,6 +14,7 @@ const Login = () => {
 
   const navigator=useNavigate();
   const handleLogin =(e)=>{
+
     e.preventDefault();
     console.log("data :  "+email+" " + password)
 
