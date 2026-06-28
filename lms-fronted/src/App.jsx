@@ -281,7 +281,7 @@ function App() {
           }}
           onDelete={async (id) => {
             await deleteStudent(id)
-            showMessage('Student deleted successfully')
+            showMessage('Student removed or marked inactive successfully')
             loadData()
           }}
         />
@@ -329,7 +329,7 @@ function App() {
       )
     }
     if (page === 'Issue Book') {
-      return <IssueBook form={issueForm} setForm={setIssueForm} onSubmit={saveIssue} students={visibleStudents} books={books} issues={visibleIssues} />
+      return <IssueBook form={issueForm} setForm={setIssueForm} onSubmit={saveIssue} students={visibleStudents} books={books} issues={visibleIssues} onReturn={handleReturn} />
     }
     if (page === 'Return Book') {
       return <ReturnBook issues={visibleActiveIssues} returns={visibleReturns} students={visibleStudents} onReturn={handleReturn} />
