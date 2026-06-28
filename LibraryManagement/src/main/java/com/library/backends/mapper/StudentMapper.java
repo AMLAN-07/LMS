@@ -13,6 +13,7 @@ public class StudentMapper {
         dto.setEmail(student.getEmail());
         dto.setCourse(student.getCourse());
         dto.setRollNumber(student.getRollNumber());
+        dto.setOrganizationName(student.getOrganizationName());
         dto.setActive(student.isActive());
         return dto;
     }
@@ -25,6 +26,9 @@ public class StudentMapper {
         student.setEmail(studentDto.getEmail());
         student.setCourse(studentDto.getCourse() == null ? "BCA" : studentDto.getCourse());
         student.setRollNumber(studentDto.getRollNumber());
+        student.setOrganizationName(studentDto.getOrganizationName() == null || studentDto.getOrganizationName().isBlank()
+                ? "Centurion university technology and management"
+                : studentDto.getOrganizationName());
         student.setActive(studentDto.isActive());
         return student;
     }

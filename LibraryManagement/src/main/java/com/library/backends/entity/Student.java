@@ -17,6 +17,8 @@ import lombok.Setter;
 
 public class Student {
 
+    private static final String DEFAULT_ORGANIZATION = "Centurion university technology and management";
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -39,6 +41,9 @@ public class Student {
 
     @Column(name = "roll_number", unique = true)
     private String rollNumber;
+
+    @Column(name = "organization_name")
+    private String organizationName = DEFAULT_ORGANIZATION;
 
     @Column(nullable = false)
     private boolean active = true;

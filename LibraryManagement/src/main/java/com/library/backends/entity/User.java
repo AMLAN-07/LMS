@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name="users")
 public class User {
 
+    private static final String DEFAULT_ORGANIZATION = "Centurion university technology and management";
+
     
 
     @Id
@@ -18,6 +20,7 @@ public class User {
     @NotBlank
     private String password;
     private String role = "STUDENT";
+    private String organizationName = DEFAULT_ORGANIZATION;
     private boolean active = true;
 
     public User() {
@@ -59,6 +62,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     public boolean isActive() {

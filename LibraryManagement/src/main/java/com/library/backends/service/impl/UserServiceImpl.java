@@ -13,6 +13,8 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final String DEFAULT_ORGANIZATION = "Centurion university technology and management";
+
     @Autowired
     UserRepository userRepository;
 
@@ -20,6 +22,9 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user){
         if (user.getRole() == null || user.getRole().isBlank()) {
             user.setRole("STUDENT");
+        }
+        if (user.getOrganizationName() == null || user.getOrganizationName().isBlank()) {
+            user.setOrganizationName(DEFAULT_ORGANIZATION);
         }
         return userRepository.save(user);
     }

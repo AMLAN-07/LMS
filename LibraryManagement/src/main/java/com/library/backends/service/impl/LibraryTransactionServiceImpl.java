@@ -9,6 +9,7 @@ import com.library.backends.repository.*;
 import com.library.backends.service.LibraryTransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class LibraryTransactionServiceImpl implements LibraryTransactionService {
 
     private static final double FINE_PER_DAY = 5.0;

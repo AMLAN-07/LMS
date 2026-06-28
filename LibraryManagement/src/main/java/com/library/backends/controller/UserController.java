@@ -19,6 +19,8 @@ import java.util.Base64;
 @RequestMapping("/api/auth")
 public class UserController {
 
+    private static final String DEFAULT_ORGANIZATION = "Centurion university technology and management";
+
     @Autowired
     UserService userService;
 
@@ -31,11 +33,14 @@ public class UserController {
     public AuthResponse loginUser(@RequestBody LoginRequest loginRequest) {
         User user = userService.authenticateUser(loginRequest);
         if (user == null) {
-            return new AuthResponse(false, null, null, null, null, "Invalid email or password");
+            return new AuthResponse(false, null, null, null, null, null, "Invalid email or password");
         }
         String tokenText = loginRequest.getEmail() + ":library-token";
         String token = Base64.getEncoder().encodeToString(tokenText.getBytes(StandardCharsets.UTF_8));
         String role = user.getRole() == null || user.getRole().isBlank() ? "STUDENT" : user.getRole().toUpperCase();
-        return new AuthResponse(true, token, role, user.getEmail(), user.getName(), "Login successful");
+        String organizationName = user.getOrganizationName() == null || user.getOrganizationName().isBlank()
+                ? DEFAULT_ORGANIZATION
+                : user.getOrganizationName();
+        return new AuthResponse(true, token, role, user.getEmail(), user.getName(), organizationName, "Login successful");
     }
 }
