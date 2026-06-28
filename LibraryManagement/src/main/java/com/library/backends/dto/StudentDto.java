@@ -15,4 +15,7 @@ public class StudentDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String course;
+    private String rollNumber;
+    private boolean active;
 }

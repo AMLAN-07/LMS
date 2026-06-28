@@ -1,23 +1,36 @@
-import axios from "axios";
-import { data } from "react-router-dom";
+import axios from 'axios'
 
-const LogRegd_API_BASE_URL="http://localhost:8080/api"
+const api = axios.create({
+  baseURL: 'http://localhost:8080/api',
+})
 
-export const loginUser=(data)=>axios.post(LogRegd_API_BASE_URL+"/loginUser",data)
-export const createUser=(UserData)=>axios.post(LogRegd_API_BASE_URL+"/createUser",UserData)
+export const loginUser = (data) => api.post('/auth/login', data)
+export const registerUser = (data) => api.post('/auth/register', data)
 
+export const getDashboard = () => api.get('/dashboard')
 
-// =================================================
-const REST_API_BASE_URL="http://localhost:8080/api/students";
+export const getStudents = () => api.get('/students')
+export const createStudent = (data) => api.post('/students', data)
+export const updateStudent = (id, data) => api.put(`/students/${id}`, data)
+export const deleteStudent = (id) => api.delete(`/students/${id}`)
 
-export const listStudent =()=>axios.get(REST_API_BASE_URL);
+export const getBooks = () => api.get('/books')
+export const createBook = (data) => api.post('/books', data)
+export const updateBook = (id, data) => api.put(`/books/${id}`, data)
+export const deleteBook = (id) => api.delete(`/books/${id}`)
 
-export const createStudent =(student) => axios.post(REST_API_BASE_URL,student);
+export const getCategories = () => api.get('/categories')
+export const createCategory = (data) => api.post('/categories', data)
+export const updateCategory = (id, data) => api.put(`/categories/${id}`, data)
+export const deleteCategory = (id) => api.delete(`/categories/${id}`)
 
-export const getStudent = (studentId) => axios.get(REST_API_BASE_URL+'/'+studentId);
+export const getIssues = () => api.get('/issues')
+export const createIssue = (data) => api.post('/issues', data)
 
-export const updateStudent = (studentId,student) => axios.put(REST_API_BASE_URL+'/'+studentId,student);
+export const getReturns = () => api.get('/returns')
+export const returnBook = (issueId) => api.post(`/returns/${issueId}`)
 
+<<<<<<< HEAD
 export const deleteStudent = (studentId) => axios.delete(REST_API_BASE_URL+'/'+studentId);
 
 //==========================================================
@@ -65,3 +78,10 @@ export const listReturnedBooks = () =>
   axios.get(REPORTS_API_BASE_URL + "/returned-books");
 
 // =====================================================
+=======
+export const getFines = () => api.get('/fines')
+export const markFinePaid = (fineId) => api.put(`/fines/${fineId}/paid`)
+
+export const listStudent = getStudents
+export const createUser = registerUser
+>>>>>>> a5db1ff (update both frontned and backend)

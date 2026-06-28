@@ -18,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user){
+        if (user.getRole() == null || user.getRole().isBlank()) {
+            user.setRole("STUDENT");
+        }
         return userRepository.save(user);
     }
     @Override
@@ -31,7 +34,7 @@ public class UserServiceImpl implements UserService {
         if(!user1.getPassword().equals(loginRequest.getPassword())){
             return false;
         }
-        return user1.getEmail().equals(loginRequest.getEmail());
+        return user1.isActive() && user1.getEmail().equals(loginRequest.getEmail());
 
 
 

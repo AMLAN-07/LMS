@@ -3,9 +3,11 @@ package com.library.backends.service.impl;
 
 import com.library.backends.dto.BookDto;
 import com.library.backends.entity.Book;
+import com.library.backends.entity.Category;
 import com.library.backends.exception.ResourcesNotFoundException;
 import com.library.backends.mapper.BookMapper;
 import com.library.backends.repository.BookRepository;
+import com.library.backends.repository.CategoryRepository;
 import com.library.backends.service.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,11 +20,13 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
 
     private BookRepository bookRepository;
+    private CategoryRepository categoryRepository;
 
     @Override
     public BookDto createBook(BookDto bookDto) {
 
         Book book= BookMapper.mapToBook(bookDto);
+        setCategory(book, bookDto.getCategoryId());
         Book savedBook = bookRepository.save(book);
         return BookMapper.mapToBookDto(savedBook);
     }
@@ -48,7 +52,10 @@ public class BookServiceImpl implements BookService {
         );
         book.setTitle(updatedBook.getTitle());
         book.setAuthor(updatedBook.getAuthor());
+        book.setIsbn(updatedBook.getIsbn());
+        book.setPublisher(updatedBook.getPublisher());
         book.setBookcopy(updatedBook.getBookcopy());
+        setCategory(book, updatedBook.getCategoryId());
 
         Book updatedBookObj = bookRepository.save(book);
         return BookMapper.mapToBookDto(updatedBookObj);
@@ -63,4 +70,13 @@ public class BookServiceImpl implements BookService {
 
     }
 
+    private void setCategory(Book book, Long categoryId) {
+        if (categoryId == null) {
+            book.setCategory(null);
+            return;
+        }
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourcesNotFoundException("Category with id " + categoryId + " not found!"));
+        book.setCategory(category);
+    }
 }
