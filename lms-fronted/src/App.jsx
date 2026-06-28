@@ -56,6 +56,7 @@ function App() {
   const pages = isAdmin ? adminPages : studentPages
   const [page, setPage] = useState(isAdmin ? 'Dashboard' : 'My Dashboard')
   const [message, setMessage] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
   const [students, setStudents] = useState([])
   const [books, setBooks] = useState([])
   const [categories, setCategories] = useState([])
@@ -88,8 +89,11 @@ function App() {
       setIssues(issuesRes.data)
       setReturns(returnsRes.data)
       setFines(finesRes.data)
+      setMessage('')
+      return true
     } catch {
       setMessage('Backend is not running. Start Spring Boot on http://localhost:8080 to load live data.')
+      return false
     }
   }
 
@@ -150,6 +154,15 @@ function App() {
   const showMessage = (text) => {
     setMessage(text)
     setTimeout(() => setMessage(''), 3000)
+  }
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    const refreshed = await loadData()
+    setRefreshing(false)
+    if (refreshed) {
+      showMessage('Data refreshed successfully')
+    }
   }
 
   const handleLogin = async (event) => {
@@ -364,7 +377,8 @@ function App() {
       page={page}
       setPage={setPage}
       message={message}
-      onRefresh={loadData}
+      onRefresh={handleRefresh}
+      refreshing={refreshing}
       onLogout={handleLogout}
     >
       {isAdmin ? renderAdminPage() : renderStudentPage()}

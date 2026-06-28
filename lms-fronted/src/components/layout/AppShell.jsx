@@ -1,4 +1,4 @@
-function AppShell({ currentUser, pages, page, setPage, message, onRefresh, onLogout, children }) {
+function AppShell({ currentUser, pages, page, setPage, message, onRefresh, refreshing, onLogout, children }) {
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -21,8 +21,10 @@ function AppShell({ currentUser, pages, page, setPage, message, onRefresh, onLog
             <h2>{page}</h2>
           </div>
           <div className="topbar-actions">
-            <button className="secondary-btn" onClick={onRefresh}>Refresh</button>
-            <button className="danger-btn" onClick={onLogout}>Logout</button>
+            <button type="button" className="secondary-btn" onClick={onRefresh} disabled={refreshing}>
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+            <button type="button" className="danger-btn" onClick={onLogout}>Logout</button>
           </div>
         </header>
         {message && <div className="alert">{message}</div>}
