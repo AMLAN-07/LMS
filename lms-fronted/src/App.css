@@ -250,6 +250,31 @@ th {
   gap: 8px;
 }
 
+.status-badge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 9px;
+  white-space: nowrap;
+}
+
+.status-badge.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.neutral {
+  background: #e5e7eb;
+  color: #374151;
+}
+
 .bar-chart {
   align-items: end;
   border-bottom: 1px solid #d6dee8;
@@ -285,6 +310,10 @@ th {
   line-height: 1.8;
   margin: 0;
   padding-left: 18px;
+}
+
+.activity-list.compact {
+  line-height: 2.2;
 }
 
 .report-count {

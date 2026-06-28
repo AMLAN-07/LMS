@@ -1,4 +1,5 @@
 import StatCard from '../common/StatCard'
+import StatusBadge from '../common/StatusBadge'
 import IssueTable from './IssueTable'
 import StudentProfile from './StudentProfile'
 
@@ -17,8 +18,22 @@ function StudentDashboard({ user, student, issues, returns, fines }) {
       </div>
       <div className="two-column">
         <StudentProfile user={user} student={student} />
-        <IssueTable issues={pendingBooks} title="Currently Issued Books" />
+        <div className="panel">
+          <h3>Return Status</h3>
+          {returns.length > 0 ? (
+            <ul className="activity-list compact">
+              {returns.slice(-4).map((item) => (
+                <li key={item.returnId || item.issueId}>
+                  Issue #{item.issueId} <StatusBadge tone="success">Returned successfully</StatusBadge>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No returned books yet</p>
+          )}
+        </div>
       </div>
+      <IssueTable issues={pendingBooks} title="Currently Issued Books" />
     </>
   )
 }
