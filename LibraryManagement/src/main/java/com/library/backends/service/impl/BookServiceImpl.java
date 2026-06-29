@@ -11,12 +11,14 @@ import com.library.backends.repository.CategoryRepository;
 import com.library.backends.service.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class BookServiceImpl implements BookService {
 
     private BookRepository bookRepository;
@@ -32,6 +34,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookDto getBookById(Long bookid) {
         Book book= bookRepository.findById(bookid)
                 .orElseThrow(()->
@@ -39,6 +42,7 @@ public class BookServiceImpl implements BookService {
         return BookMapper.mapToBookDto(book);
     }
     @Override
+    @Transactional(readOnly = true)
     public List<BookDto> getAllBooks() {
         List<Book> books= bookRepository.findAll();
         return books.stream().map((book)->BookMapper.mapToBookDto(book))
